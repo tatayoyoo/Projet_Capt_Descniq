@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,7 +24,7 @@ public class ProjetCapteur {
             System.out.println("Entrer le nombre de zones à surveiller : ");
             M = input.nextInt();
         }else if (nombre == 1){
-            capteurs = entrerViaFichier();
+            capteurs = entrerViaFichier("C:\\Users\\Yoann\\Documents\\IUT\\S4\\PROJETS\\Recherche_Operationnel\\Projet_Capt_Descniq\\src\\fichier_test\\exemple.dat");
         }else{
             return;
         }
@@ -125,35 +129,47 @@ public class ProjetCapteur {
         return listCapteur;
     }
 
-    private static List<Capteur> entrerViaFichier() {
-        return new ArrayList<Capteur>();
-    }
-}
-
-//AfficheConfigurationsValides
-/*List<String> listCapteursCouvrantZones = new ArrayList<String>();
-        List<List<Capteur>> listCapteursZone = new ArrayList<List<Capteur>>();
-        List<Capteur> capteursDansZone = new ArrayList<Capteur>();
-        String zone = "";
-        for (int i = 0; i < listCapteurs.size(); i++) {
-            for (int j = 0; j <listCapteurs.size(); j++) {
-                zone+=listCapteurs.get(j).getZone();
-                System.out.println(zone);
-                if (!(listCapteursCouvrantZones.contains(zone))){
-                    listCapteursCouvrantZones.add(zone);
-                }
-                capteursDansZone.add(listCapteurs.get(j));
-                if (zone.split(",").length == tab.length){
-                    listCapteursCouvrantZones.add(zone);
-                    listCapteursZone.add(capteursDansZone);
-                    System.out.println(listCapteurs.get(j));
-                    break;
-                }
-            }
-            zone = "";
-            capteursDansZone = new ArrayList<Capteur>();
+    private static List<Capteur> entrerViaFichier(String urlFich) {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(urlFich));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
 
-        for (int i = 0; i < listCapteursCouvrantZones.size(); i++) {
-            System.out.println(listCapteursZone.get(i));
-        }*/
+        List<Capteur> listCapteur = new ArrayList<Capteur>();
+        try {
+
+            String line;
+            int nbsCapteur = Integer.parseInt(br.readLine());
+
+            int nbsZone = Integer.parseInt(br.readLine());
+
+            String dureeVieCpateur = br.readLine();
+            String[] tabDureeVie = dureeVieCpateur.split(" ");
+
+            for (int i = 0; i < nbsCapteur; i++) {
+                int dureeVie = Integer.parseInt(tabDureeVie[i]);
+
+                Capteur capteur = new Capteur(dureeVie,i+1);
+
+                String[] numZones = br.readLine().split(" ");
+
+                capteur.addZoneDansListe(numZones);
+
+                listCapteur.add(capteur);
+            }
+
+            br.close();
+
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        for (Capteur aListCapteur : listCapteur) {
+            System.out.println(aListCapteur.dureeVie + "," + aListCapteur.zoneSurveillee);
+        }
+
+        return listCapteur;    }
+}
