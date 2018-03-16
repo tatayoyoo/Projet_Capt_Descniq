@@ -11,28 +11,30 @@ import java.util.Scanner;
  */
 public class ProjetCapteur {
     static final Scanner input = new Scanner(System.in);
+    private static int nbsZone;
+
     public static void main(String[] args) {
         List<Capteur> capteurs = new ArrayList<Capteur>();
 
         System.out.println("Entrer 0 pour que vous puissiez entrer les données ou 1 pour lire dans un fichier");
         int nombre = input.nextInt();
 
-        int M =0;
+
 
         if (nombre == 0){
             capteurs = entrerParLUtilisateur();
             System.out.println("Entrer le nombre de zones à surveiller : ");
-            M = input.nextInt();
+            nbsZone = input.nextInt();
         }else if (nombre == 1){
-            capteurs = entrerViaFichier("C:\\Users\\Yoann\\Documents\\IUT\\S4\\PROJETS\\Recherche_Operationnel\\Projet_Capt_Descniq\\src\\fichier_test\\exemple.dat");
+            capteurs = entrerViaFichier("src/fichier_test/exemple.dat");
         }else{
             return;
         }
 
-        List<List<Capteur>> listConfig = afficheConfigurations(capteurs,M);
+        List<List<Capteur>> listConfig = afficheConfigurations(capteurs,nbsZone);
         for (int i = 0; i < listConfig.size(); i++) {
             for (int j = 0; j < listConfig.get(i).size(); j++) {
-                System.out.print(listConfig.get(i).get(j)+" ");
+                System.out.print(listConfig.get(i).get(j).numeroCapteur+" ");
             }
             System.out.println();
         }
@@ -84,9 +86,9 @@ public class ProjetCapteur {
                     }
 
                     if (nombreAppartenantATab == nombreZones){
-                        for (int k = 0; k < listCapteursDansZone.size(); k++) {
+                        /*for (int k = 0; k < listCapteursDansZone.size(); k++) {
                             System.out.print("Capteur numéro : "+listCapteursDansZone.get(k).numeroCapteur+"+");
-                        }
+                        }*/
                         listConfigurations.add(listCapteursDansZone);
                         System.out.println();
                         zone = "";
@@ -143,7 +145,7 @@ public class ProjetCapteur {
             String line;
             int nbsCapteur = Integer.parseInt(br.readLine());
 
-            int nbsZone = Integer.parseInt(br.readLine());
+            nbsZone = Integer.parseInt(br.readLine());
 
             String dureeVieCpateur = br.readLine();
             String[] tabDureeVie = dureeVieCpateur.split(" ");
@@ -171,5 +173,6 @@ public class ProjetCapteur {
             System.out.println(aListCapteur.dureeVie + "," + aListCapteur.zoneSurveillee);
         }
 
-        return listCapteur;    }
+        return listCapteur;
+    }
 }
