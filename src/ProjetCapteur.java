@@ -1,4 +1,3 @@
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -8,34 +7,31 @@ import java.util.Scanner;
  */
 public class ProjetCapteur {
     static final Scanner input = new Scanner(System.in);
-
     public static void main(String[] args) {
-//        List<Capteur> capteurs = new ArrayList<Capteur>();
-//
-//        System.out.println("Entrer 0 pour que vous puissiez entrer les données ou 1 pour lire dans un fichier");
-//        int nombre = input.nextInt();
-//
-//        int M =0;
-//
-//        if (nombre == 0){
-//            capteurs = entrerParLUtilisateur();
-//            System.out.println("Entrer le nombre de zones à surveiller : ");
-//            M = input.nextInt();
-//        }else if (nombre == 1){
-//            capteurs = entrerViaFichier();
-//        }else{
-//            return;
-//        }
-//
-//        List<List<Capteur>> listConfig = afficheConfigurations(capteurs,M);
-//        for (int i = 0; i < listConfig.size(); i++) {
-//            for (int j = 0; j < listConfig.get(i).size(); j++) {
-//                System.out.print(listConfig.get(i).get(j)+" ");
-//            }
-//            System.out.println();
-//        }
+        List<Capteur> capteurs = new ArrayList<Capteur>();
 
-        System.out.println(entrerViaFichier("C:\\Users\\Yoann\\Documents\\IUT\\S4\\PROJETS\\Recherche_Operationnel\\Projet_Capt_Descniq\\src\\fichier_test\\exemple.dat"));
+        System.out.println("Entrer 0 pour que vous puissiez entrer les données ou 1 pour lire dans un fichier");
+        int nombre = input.nextInt();
+
+        int M =0;
+
+        if (nombre == 0){
+            capteurs = entrerParLUtilisateur();
+            System.out.println("Entrer le nombre de zones à surveiller : ");
+            M = input.nextInt();
+        }else if (nombre == 1){
+            capteurs = entrerViaFichier();
+        }else{
+            return;
+        }
+
+        List<List<Capteur>> listConfig = afficheConfigurations(capteurs,M);
+        for (int i = 0; i < listConfig.size(); i++) {
+            for (int j = 0; j < listConfig.get(i).size(); j++) {
+                System.out.print(listConfig.get(i).get(j)+" ");
+            }
+            System.out.println();
+        }
     }
 
     private static void afficheConfigurationsElem(List<List<Capteur>> listConfig, int nombreZones) {
@@ -129,53 +125,10 @@ public class ProjetCapteur {
         return listCapteur;
     }
 
-    private static List<Capteur> entrerViaFichier(String urlFich) {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(urlFich));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        List<Capteur> listCapteur = new ArrayList<Capteur>();
-        try {
-
-            String line;
-            int nbsCapteur = Integer.parseInt(br.readLine());
-
-            int nbsZone = Integer.parseInt(br.readLine());
-
-            String dureeVieCpateur = br.readLine();
-            String[] tabDureeVie = dureeVieCpateur.split(" ");
-
-            for (int i = 0; i < nbsCapteur; i++) {
-                int dureeVie = Integer.parseInt(tabDureeVie[i]);
-
-                Capteur capteur = new Capteur(dureeVie,i+1);
-
-                String[] numZones = br.readLine().split(" ");
-
-                capteur.addZoneDansListe(numZones);
-
-                listCapteur.add(capteur);
-            }
-
-            br.close();
-
-
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        for (Capteur aListCapteur : listCapteur) {
-            System.out.println(aListCapteur.dureeVie + "," + aListCapteur.zoneSurveillee);
-        }
-
-        return listCapteur;
+    private static List<Capteur> entrerViaFichier() {
+        return new ArrayList<Capteur>();
     }
 }
-
-
 
 //AfficheConfigurationsValides
 /*List<String> listCapteursCouvrantZones = new ArrayList<String>();
