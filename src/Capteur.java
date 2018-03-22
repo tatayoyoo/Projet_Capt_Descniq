@@ -29,4 +29,8 @@ public class Capteur {
 
         return zone;
     }
+
+    public List<Integer> getListeZone() {
+        return zoneSurveillee;
+    }
 }
