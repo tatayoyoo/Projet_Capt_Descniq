@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -26,11 +23,12 @@ public class ProjetCapteur {
             System.out.println("Entrer le nombre de zones à surveiller : ");
             nbsZone = input.nextInt();
         }else if (nombre == 1){
-            capteurs = entrerViaFichier("src/fichier_test/petit_test_2");
+            capteurs = entrerViaFichier("src/fichier_test/petit_test_1");
         }else{
             return;
         }
 
+        //Affiche les configurations elementaires
         List<List<Capteur>> listConfig = afficheConfigurations(capteurs,nbsZone);
         listConfig = trieListe(listConfig);
         for (int i = 0; i < listConfig.size(); i++) {
@@ -39,6 +37,83 @@ public class ProjetCapteur {
             }
             System.out.println();
         }
+        //Fin d'affichage
+
+        //Remplissage String pour fichier.lp
+        String maximize = "Maximize ";
+        String variable = "BINARY \n";
+        for (int i = 0; i < capteurs.size(); i++) {
+            if (i != capteurs.size()-1){
+                maximize += "t"+i+" + ";
+            }else{
+                maximize += "t"+i+"";
+            }
+            variable+="t"+i+"\n";
+        }
+        variable+="END";
+        //System.out.println(maximize);
+        //System.out.println(variable);
+
+        String[] nbLignesAAjouterDansFichier = new String[capteurs.size()];
+        String ligneTab = "";
+        int numCapteur;
+        //Peuplement tableau de String
+        for (int i = 0; i < capteurs.size(); i++) {
+            numCapteur = capteurs.get(i).numeroCapteur;
+            for (int j = 0; j < listConfig.size(); j++) {
+                for (int k = 0; k < listConfig.get(j).size(); k++) {
+                    if (listConfig.get(j).get(k).numeroCapteur == numCapteur){
+                        ligneTab+="t"+j+" ";
+                    }
+                }
+            }
+            //System.out.println(ligneTab);
+            nbLignesAAjouterDansFichier[i] = ligneTab;
+            ligneTab = "";
+        }
+        //Fin peuplement tableau
+
+        //Ecriture de la ligne correcte pour le fichier.lp
+        for (int i = 0; i < nbLignesAAjouterDansFichier.length; i++) {
+            String[] tabInter = nbLignesAAjouterDansFichier[i].split(" ");
+            String ligneAChanger = "";
+            for (int j = 0; j < tabInter.length; j++) {
+                if (j != tabInter.length-1){
+                    ligneAChanger+=tabInter[j]+"+";
+                }else{
+                    ligneAChanger+=tabInter[j]+"<="+capteurs.get(i).dureeVie;
+                }
+            }
+            //System.out.println(ligneAChanger);
+            nbLignesAAjouterDansFichier[i] = ligneAChanger;
+        }
+        //Fin écriture
+
+        try {
+            ecritDansFichier(variable,maximize,nbLignesAAjouterDansFichier);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Runtime.getRuntime().exec("glpsol -cpxlp fichier.lp -o solution");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void ecritDansFichier(String variable, String maximize, String[] nbLignesAAjouterDansFichier) throws IOException {
+        PrintWriter printWriter = new PrintWriter(new FileWriter("src/fichier.lp"),true);
+        printWriter.println(maximize);
+        printWriter.println();
+        printWriter.println("Subject To");
+        printWriter.println();
+        for (int i = 0; i < nbLignesAAjouterDansFichier.length; i++) {
+            printWriter.println(nbLignesAAjouterDansFichier[i]);
+        }
+        printWriter.println();
+        printWriter.println(variable);
+        printWriter.close();
     }
 
     private static List<List<Capteur>> trieListe(List<List<Capteur>> listConfig){
